@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 import * as routes from "./routes";
 import { createConnection } from 'typeorm';
 
-dotenv.config();
+if(process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 const app = express();
 const port = process.env.SERVER_PORT;
