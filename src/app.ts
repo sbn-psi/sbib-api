@@ -9,7 +9,7 @@ if(process.env.NODE_ENV !== 'production') {
 }
 
 const app = express();
-const port = process.env.SERVER_PORT;
+const port = 9494;
 
 // Configure routes
 routes.register( app );
