@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv";
 import * as routes from "./routes";
 import { createConnection } from 'typeorm';
+import { backOff } from "exponential-backoff";
 
 if(process.env.NODE_ENV !== 'production') {
     dotenv.config();
@@ -14,7 +15,17 @@ const port = process.env.SERVER_PORT;
 routes.register( app );
 
 async function connectToDatabase() {
-    const connection = await createConnection();
+    try {
+        const backoffOptions = {
+            delayFirstAttempt: true,
+            startingDelay: 1000
+        }
+        await backOff(createConnection, backoffOptions);
+    } catch (err) {
+        // tslint:disable-next-line:no-console
+        console.log(err)
+        process.exit(1)
+    }
 }
 connectToDatabase().then(() => {
     // start the express server

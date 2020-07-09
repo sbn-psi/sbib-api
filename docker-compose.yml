@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   app:
     container_name: sbib-app
@@ -6,7 +6,7 @@ services:
     build: .
     ports:
       - "9494:9494"
-    links:
+    depends_on:
       - db
     environment:
       - NODE_ENV=production
