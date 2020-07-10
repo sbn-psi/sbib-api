@@ -1,9 +1,9 @@
 # SBIB
 
-The backend (API and Database) for the revised version of the Small Bodies Image Browser (SBIB) at SBN PSI. This application is built in [Typescript](https://www.typescriptlang.org/), an object-oriented riff on Javascript, using (Node)[https://nodejs.org/en/] and [Express](https://expressjs.com/) to power the API, and [TypeORM](https://typeorm.io/) as an ORM to interface with the MySQL database.
+The backend (API and Database) for the revised version of the Small Bodies Image Browser (SBIB) at SBN PSI. This application is built in [Typescript](https://www.typescriptlang.org/), an object-oriented riff on Javascript, using [Node](https://nodejs.org/en/) and [Express](https://expressjs.com/) to power the API, and [TypeORM](https://typeorm.io/) as an ORM to interface with the MySQL database.
 
 ## Dependencies
-The application is dockerized, so unless you wish to run the application locally, the only dependency is (Docker)[https://www.docker.com/]. Otherwise, you'll need to install (Node)[https://nodejs.org/en/] and MySQL separately. Every other dependency is managed by (`npm`)[https://www.npmjs.com/].
+The application is dockerized, so unless you wish to run the application locally, the only dependency is [Docker](https://www.docker.com/). Otherwise, you'll need to install [Node](https://nodejs.org/en/) and MySQL separately. Every other dependency is managed by [`npm`](https://www.npmjs.com/).
 
 ## Installation and Deployment
 
