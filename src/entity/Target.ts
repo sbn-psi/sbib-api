@@ -1,9 +1,15 @@
-import {Entity, PrimaryColumn, Column} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 
-@Entity("meta")
-export class Meta {
+@Entity("target")
+export class Target {
 
-    @PrimaryColumn({name: 'Version'})
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({name: 'Name'})
+    name: string;
+
+    @Column({name: 'Version'})
     version: number;
 
     @Column({name: 'Date'})

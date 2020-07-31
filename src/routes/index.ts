@@ -1,63 +1,25 @@
 import * as express from "express";
 import {getRepository} from "typeorm";
-import {Meta} from "../entity/Meta";
-import {Seq} from "../entity/Seq";
-import {Image} from "../entity/Image";
+import {Target} from "../entity/Target";
+import imageRoutes from "./images";
+import placeRoutes from "./places";
+import sequenceRoutes from "./sequences";
 
 
 export const register = ( app: express.Application ) => {
 
-    // define a route handler for the default home page
     app.get( "/", ( req, res ) => {
-        res.send( "Hello world!" );
-    } );
+        res.send( "Hello world!" )
+    } )
 
-    app.get( "/meta", async (req, res, next) => {
-        const metaRepository = getRepository(Meta)
+    app.use( "/images", imageRoutes)
+    app.use( "/places", placeRoutes)
+    app.use( "/sequences", sequenceRoutes)
+
+    app.get( "/targets", async (req, res, next) => {
+        const targetRepository = getRepository(Target)
         try {
-            const results = await metaRepository.find()
-            res.send(results)
-        } catch(err) {
-            next(err)
-        }
-    })
-
-    app.get( "/sequences", async (req, res, next) => {
-        const sequenceRepository = getRepository(Seq)
-        try {
-            const results = await sequenceRepository.find()
-            res.send(results)
-        } catch(err) {
-            next(err)
-        }
-    })
-
-    app.get( "/images", async (req, res, next) => {
-        const imageRepository = getRepository(Image)
-        try {
-            const results = await imageRepository.find({take: 10})
-            res.send(results)
-        } catch(err) {
-            next(err)
-        }
-    })
-
-    app.get( "/images/count", async (req, res, next) => {
-        const imageRepository = getRepository(Image)
-        try {
-            const results = await imageRepository.count()
-            res.json({count: results})
-        } catch(err) {
-            next(err)
-        }
-    })
-
-    app.get( "/images/:id", async (req, res, next) => {
-        const imageRepository = getRepository(Image)
-        const id = req.params.id
-
-        try {
-            const results = await imageRepository.find({where: { id }})
+            const results = await targetRepository.find()
             res.send(results)
         } catch(err) {
             next(err)

@@ -1,122 +1,142 @@
-import {Entity, PrimaryColumn, Column} from "typeorm";
+import {Entity, PrimaryColumn, Column, ManyToOne} from "typeorm";
+import {Target} from './Target'
 
 @Entity("images")
 export class Image {
-    @Column()
-    id: number;
 
-    @PrimaryColumn({name: 'image_name'})
-    imageName: string;
+    static shortKeys: (keyof Image)[] = ['imageName', 'minLat', 'maxLat', 'minLon', 'maxLon']
+    private static requiredKeys: (keyof Image)[] = ['id', 'imageName', 'minLat', 'minLon', 'maxLat', 'maxLon', 'exposure', 'time']
+
+    @PrimaryColumn()
+    id: number
+
+    @Column({name: 'image_name'})
+    imageName: string
+
+    @ManyToOne(type => Target)
+    target: Target
 
     @Column({name: 'is_done'})
-    isDone: boolean;
+    isDone: boolean
 
     @Column()
-    time: string;
+    time: string
 
     @Column()
-    instrument: string;
+    instrument: string
 
     @Column()
-    thumb: string;
+    thumb: string
 
     @Column()
-    exposure: number;
+    exposure: number
 
     @Column({name: 'target_name'})
-    targetName: string;
+    targetName: string
 
     @Column({name: 'target_desc'})
-    targetDescription: string;
+    targetDescription: string
 
     @Column({name: 'min_lat'})
-    minLat: number;
+    minLat: number
 
     @Column({name: 'max_lat'})
-    maxLat: number;
+    maxLat: number
 
     @Column({name: 'min_lon'})
-    minLon: number;
+    minLon: number
 
     @Column({name: 'max_lon'})
-    maxLon: number;
+    maxLon: number
 
     @Column({name: 'seq_id'})
-    seqId: string;
+    seqId: string
 
     @Column({name: 'min_res'})
-    minRes: number;
+    minRes: number
 
     @Column({name: 'central_body'})
-    centralBody: string;
+    centralBody: string
 
     @Column({name: 'obs_type'})
-    obsType: string;
+    obsType: string
 
     @Column({name: 'mission_phase'})
-    missionPhase: string;
+    missionPhase: string
 
     @Column({name: 'sequence_id'})
-    sequenceId: string;
+    sequenceId: string
+
+    @Column({name: 'sequence_title'})
+    sequenceTitle: string
 
     @Column({name: 'i_spice'})
-    iSpice: string;
+    iSpice: string
 
     @Column({name: 't_spice'})
-    tSpice: string;
+    tSpice: string
 
     @Column({name: 'cal_flat'})
-    calFlat: string;
+    calFlat: string
 
     @Column()
-    samples: number;
+    samples: number
 
     @Column()
-    lines: number;
+    lines: number
 
     @Column()
-    footprint: string;
+    footprint: string
 
     @Column()
-    filter: string;
+    filter: string
 
     @Column()
-    shape: string;
+    shape: string
 
     @Column()
-    level: string;
+    level: string
 
     @Column({name: 'f_lines'})
-    fLines: number;
+    fLines: number
 
     @Column({name: 'f_samples'})
-    fSamples: number;
+    fSamples: number
 
     @Column()
-    projection: string;
+    projection: string
 
     @Column()
-    version: string;
+    version: string
 
     @Column()
-    orbit: string;
+    orbit: string
 
     @Column()
-    nadir: string;
+    nadir: string
 
     @Column()
-    filename: string;
+    filename: string
+
+    @Column({name: 'filename_a'})
+    filenameA: string
 
     @Column()
-    i: number;
+    i: number
 
     @Column()
-    e: number;
+    e: number
 
     @Column()
-    phase: number;
+    phase: number
 
-    url() {
-        return `/images/${this.id}`
+    @Column()
+    softVers: string
+
+    static validate(obj: any) {
+        const expectedKeys = Image.requiredKeys as string[]
+        const presentKeys = Object.keys(obj)
+        return expectedKeys.length <= presentKeys.length
+            && expectedKeys.every(key => presentKeys.includes(key))
     }
 }

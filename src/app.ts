@@ -22,7 +22,6 @@ async function connectToDatabase() {
         }
         await backOff(createConnection, backoffOptions);
     } catch (err) {
-        // tslint:disable-next-line:no-console
         console.log(err)
         process.exit(1)
     }
@@ -30,11 +29,9 @@ async function connectToDatabase() {
 connectToDatabase().then(() => {
     // start the express server
     app.listen( port, () => {
-        // tslint:disable-next-line:no-console
         console.log( `server started at http://localhost:${ port }` );
     } );
 }, (error: Error )=> {
-    // tslint:disable-next-line:no-console
     console.log(error)
     process.exit(1)
 })
