@@ -7,6 +7,16 @@ const imageRepository = () => getRepository(Image)
 
 router.use(express.json())
 
+router.get( "/", async (req, res, next) => {
+    const imageRepository = getRepository(Image);
+    try {
+        const results = await imageRepository.find();
+        res.send(results);
+    } catch(err) {
+        next(err);
+    }
+})
+
 router.post( "/", async (req, res, next) => {
     try {
         const image = req.body
