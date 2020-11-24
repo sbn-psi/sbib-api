@@ -57,7 +57,7 @@ npm i -g typeorm
 And then run:
 
 ```bash
-$ typeorm migration:generate -n [Your name for the migration]
+$ typeorm migration:create -d src/migrations -n [Your name for the migration]
 ```
 
-This should generate a new file with the name specified, as well as some semirandom characters to keep migrations in the right order. Ensure that this file ends up in `src/migrations`.
+This should create a new file with the name specified, as well as some semirandom characters to keep migrations in the right order. Ensure that this file ends up in `src/migrations`.
