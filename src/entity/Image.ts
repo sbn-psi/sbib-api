@@ -85,7 +85,7 @@ export class Image {
     @Column()
     lines: number
 
-    @Column()
+    @Column("text")
     footprint: string
 
     @Column()
