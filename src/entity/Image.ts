@@ -4,8 +4,8 @@ import {Target} from './Target'
 @Entity("images")
 export class Image {
 
-    static shortKeys: (keyof Image)[] = ['imageName', 'minLat', 'maxLat', 'minLon', 'maxLon']
-    private static requiredKeys: (keyof Image)[] = ['id', 'imageName', 'minLat', 'minLon', 'maxLat', 'maxLon', 'exposure', 'time']
+    static shortKeys: (keyof Image)[] = ['imageName', 'targetId', 'minLat', 'maxLat', 'minLon', 'maxLon']
+    private static requiredKeys: (keyof Image)[] = ['id', 'targetId', 'imageName', 'minLat', 'minLon', 'maxLat', 'maxLon', 'exposure', 'time']
 
     @PrimaryColumn()
     id: number
@@ -33,6 +33,9 @@ export class Image {
 
     @Column({name: 'target_name'})
     targetName: string
+
+    @Column({name: 'targetId'})
+    targetId: number
 
     @Column({name: 'target_desc'})
     targetDescription: string
