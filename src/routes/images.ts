@@ -46,7 +46,7 @@ router.get( "/all/:target", async (req, res, next) => {
 router.get( "/count/:target", async (req, res, next) => {
     const targetId = req.params.target
     try {
-        const params = targetId ? {where: {target: {id: targetId}}} : null
+        const params: FindManyOptions = targetId ? {where: {target: {id: targetId}}} : null
         const results = await imageRepository().count(params)
         res.json({count: results})
     } catch(err) {
@@ -56,7 +56,6 @@ router.get( "/count/:target", async (req, res, next) => {
 
 router.get( "/single/:id", async (req, res, next) => {
     const id = req.params.id
-
     try {
         const results = await imageRepository().find({where: { id }})
         res.send(results)
