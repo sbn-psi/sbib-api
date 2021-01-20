@@ -1,13 +1,13 @@
-import {Entity, PrimaryColumn, Column, ManyToOne} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from "typeorm";
 import {Target} from './Target'
 
 @Entity("images")
 export class Image {
 
-    static shortKeys: (keyof Image)[] = ['imageName', 'targetId', 'minLat', 'maxLat', 'minLon', 'maxLon']
+    static shortKeys: (keyof Image)[] = ['id', 'imageName', 'targetId', 'minLat', 'maxLat', 'minLon', 'maxLon', 'footprint']
     private static requiredKeys: (keyof Image)[] = ['id', 'targetId', 'imageName', 'minLat', 'minLon', 'maxLat', 'maxLon', 'exposure', 'time']
 
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn('increment')
     id: number
 
     @Column({name: 'image_name'})
