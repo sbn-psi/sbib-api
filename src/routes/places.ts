@@ -1,10 +1,9 @@
 import * as express from "express";
 import {getRepository, FindManyOptions} from "typeorm";
 import {Place} from "../entity/Place";
-import {Image} from '../entity/Image';
 
 const router = express.Router()
-const placesRepository = () => getRepository(Image)
+const placesRepository = () => getRepository(Place)
 
 router.use(express.json())
 
