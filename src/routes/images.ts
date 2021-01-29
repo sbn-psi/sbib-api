@@ -8,9 +8,8 @@ const imageRepository = () => getRepository(Image)
 router.use(express.json())
 
 router.get( "/", async (req, res, next) => {
-    const imageRepository = getRepository(Image);
     try {
-        const results = await imageRepository.find();
+        const results = await imageRepository().find();
         res.send(results);
     } catch(err) {
         next(err);
