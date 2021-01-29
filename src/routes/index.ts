@@ -4,7 +4,7 @@ import {Target} from "../entity/Target";
 import imageRoutes from "./images";
 import placeRoutes from "./places";
 import sequenceRoutes from "./sequences";
-
+import searchRoutes from "./search";
 
 export const register = ( app: express.Application ) => {
 
@@ -15,6 +15,7 @@ export const register = ( app: express.Application ) => {
     app.use( "/images", imageRoutes)
     app.use( "/places", placeRoutes)
     app.use( "/sequences", sequenceRoutes)
+    app.use( "/search", searchRoutes)
 
     app.get( "/targets", async (req, res, next) => {
         const targetRepository = getRepository(Target)
