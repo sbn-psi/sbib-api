@@ -1,15 +1,14 @@
 import {Entity, PrimaryColumn, Column, ManyToOne} from "typeorm";
-import {Target} from './Target'
 
 @Entity("seqs")
 export class Seq {
-    private static requiredKeys: (keyof Seq)[] = ['id', 'name']
+    private static requiredKeys: (keyof Seq)[] = ['id', 'name', 'targetId']
 
     @PrimaryColumn()
     id: number = null
 
-    @ManyToOne(type => Target)
-    target: Target = null
+    @Column()
+    targetId: number = null
 
     @Column()
     name: string = null

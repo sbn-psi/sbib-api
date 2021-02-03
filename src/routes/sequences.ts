@@ -1,6 +1,6 @@
 import * as express from "express";
-import {getRepository, FindManyOptions} from "typeorm";
-import {Seq} from "../entity/Seq";
+import { getRepository, FindManyOptions } from "typeorm";
+import { Seq } from "../entity/Seq";
 
 const router = express.Router()
 const sequenceRepository = () => getRepository(Seq)
@@ -21,34 +21,33 @@ router.post( "/", async (req, res, next) => {
     }
 })
 
-router.get( "/all/:target", async (req, res, next) => {
-    const target = req.params.target
+router.get( "/all/:targetId", async (req, res, next) => {
+    const targetId = req.params.targetId
     try {
-        const params: FindManyOptions = target ? {where: {target: {id: target}}} : {take: 10}
+        const params: FindManyOptions = targetId ? {where: {targetId: targetId}} : null
         const results = await sequenceRepository().find(params)
-        res.send(results)
+        res.json(results)
     } catch(err) {
         next(err)
     }
 })
 
-router.get( "/count/:target", async (req, res, next) => {
-    const targetId = req.params.target
+router.get( "/count/:targetId", async (req, res, next) => {
+    const targetId = req.params.targetId
     try {
-        const params = targetId ? {where: {target: {id: targetId}}} : null
+        const params = targetId ? {where: {targetId: targetId}} : null
         const results = await sequenceRepository().count(params)
-        res.json({count: results})
+        res.json(results)
     } catch(err) {
         next(err)
     }
 })
 
-router.get( "/single/:id", async (req, res, next) => {
-    const id = req.params.id
-
+router.get( "/single/:targetId", async (req, res, next) => {
+    const targetId = req.params.targetId
     try {
-        const results = await sequenceRepository().find({where: { id }})
-        res.send(results)
+        const results = await sequenceRepository().find( { where: { targetId: targetId } } )
+        res.json(results)
     } catch(err) {
         next(err)
     }
