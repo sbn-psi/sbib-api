@@ -1,5 +1,5 @@
 import * as express from "express";
-import { getRepository, FindManyOptions } from "typeorm";
+import { getRepository, createQueryBuilder } from "typeorm";
 import { Seq } from "../entity/Seq";
 
 const router = express.Router()
@@ -24,11 +24,14 @@ router.post( "/", async (req, res, next) => {
 router.get( "/all/:targetId", async (req, res, next) => {
     const targetId = req.params.targetId
     try {
-        const params: FindManyOptions = targetId ? {where: {targetId: targetId}} : null
-        const results = await sequenceRepository().find(params)
-        res.json(results)
-    } catch(err) {
-        next(err)
+        const results = await createQueryBuilder( Seq )
+            .select( '*' )
+            .where( { targetId: targetId } )
+            .distinct( true )
+            .getRawMany();
+        res.json( results )
+    } catch( err ) {
+        next( err )
     }
 })
 
