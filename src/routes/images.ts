@@ -1,6 +1,6 @@
 import * as express from "express";
-import {getRepository, FindManyOptions} from "typeorm";
-import {Image} from "../entity/Image";
+import { getRepository, FindManyOptions, LessThanOrEqual } from "typeorm";
+import { Image } from "../entity/Image";
 
 const router = express.Router()
 const imageRepository = () => getRepository(Image)
@@ -62,5 +62,54 @@ router.get( "/single/:id", async (req, res, next) => {
         next(err)
     }
 })
+
+const sbibParams: string[] = [
+    'searchString',
+    'latitude',
+    'longitude',
+    'sequence',
+    'instrument',
+    'resolution'
+];
+
+router.get( "/search", async ( req, res, next ) => {
+    const queryParams: any = parseQueryString( req.query )
+
+    let where: any = {
+        target: { id: 2 },
+        minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
+        instrument: queryParams.instrument ? queryParams.instrument : null,
+        // sequence: queryParams.sequence ? queryParams.sequence : null,
+        // latitude: queryParams.latitude ? queryParams.latitude : null,
+        // longitude: queryParams.longitude ? queryParams.longitude : null,
+    };
+
+    Object.keys(where).map(key => {
+        if (where[key] === null) delete where[key];
+    });
+
+    let params: any = { where };
+
+    try {
+        const results = await imageRepository().find(params)
+        res.send(results)
+    } catch(err) {
+        next(err)
+    }
+})
+
+function parseQueryString( query: any ): Object {
+    let responseParams: {
+        [index: string]: any
+    } = {};
+    
+    // assure that only valid parameters are parsed
+    sbibParams.map( ( param: string ) => {
+        const value = query[param]
+        responseParams[param] = value;
+    });
+    
+    return responseParams;
+}
 
 export default router
