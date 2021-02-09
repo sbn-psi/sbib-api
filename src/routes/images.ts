@@ -1,5 +1,5 @@
 import * as express from "express";
-import { getRepository, FindManyOptions, LessThanOrEqual } from "typeorm";
+import { getRepository, FindManyOptions, LessThanOrEqual, Like } from "typeorm";
 import { Image } from "../entity/Image";
 
 const router = express.Router()
@@ -64,7 +64,7 @@ router.get( "/single/:id", async (req, res, next) => {
 })
 
 const sbibParams: string[] = [
-    'searchString',
+    'imageName',
     'latitude',
     'longitude',
     'sequence',
@@ -79,7 +79,8 @@ router.get( "/search", async ( req, res, next ) => {
         target: { id: 2 },
         minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
         instrument: queryParams.instrument ? queryParams.instrument : null,
-        // sequence: queryParams.sequence ? queryParams.sequence : null,
+        imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
+        sequenceTitle: queryParams.sequence ? queryParams.sequence : null,
         // latitude: queryParams.latitude ? queryParams.latitude : null,
         // longitude: queryParams.longitude ? queryParams.longitude : null,
     };
