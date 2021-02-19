@@ -72,6 +72,37 @@ const sbibParams: string[] = [
     'resolution'
 ];
 
+function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
+    var i = 0;
+    var j = 0;
+    var c = false;
+    for (i = 0, j = xp.length - 1; i < xp.length; j = i++) {
+        const polyLat = xp[i];
+        const polyLon = yp[i];
+
+        if (
+            (
+                (
+                    (polyLon <= lon)
+                    &&
+                    (lon < yp[j])
+                )
+                ||
+                (
+                    (yp[j] <= lon)
+                    &&
+                    (lon < polyLon)
+                )
+            )
+            &&
+            (lat < (xp[j] - polyLat) * (lon - polyLon) / (yp[j] - polyLon) + polyLat)
+        ) {
+            c = !c;
+        }
+    }
+    return c;
+}
+
 router.get( "/search", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
 
@@ -92,8 +123,39 @@ router.get( "/search", async ( req, res, next ) => {
     let params: any = { where };
 
     try {
-        const results = await imageRepository().find(params)
-        res.send(results)
+        const results = await (await imageRepository().find(params))
+        if ( queryParams.latitude || queryParams.longitude ) {
+            const lat = queryParams.latitude;
+            const lon = queryParams.longitude;
+
+            res.send(results.filter(function latLonFilter( image: Image, index: number, array: Image[] ) {
+                const imageCoords = {
+                    minLat: image.minLat,
+                    maxLat: image.maxLat,
+                    minLon: image.minLon,
+                    maxLon: image.maxLon,
+                };
+                if (!image.footprint) {
+                    return false;
+                } else {
+                    const footprintList: Array<string> = image.footprint.split(", ");
+                    let polyX: Array<any> = [];
+                    let polyY: Array<any> = [];
+                    footprintList.forEach( (item: string, index: number ) => {
+                        const coordinate = item.split(" ");
+                        polyX.push(parseFloat(coordinate[0]));
+                        polyY.push(parseFloat(coordinate[1]));
+                    })
+
+                    let ans = pnpoly(polyX,polyY,lon,lat);
+                    if (ans) console.log('found one!!!');
+                    return (ans) ? image : null;
+                }
+                return image
+            }))
+        } else {
+            res.send(results)
+        }
     } catch(err) {
         next(err)
     }
