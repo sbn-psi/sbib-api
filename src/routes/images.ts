@@ -1,5 +1,5 @@
 import * as express from "express";
-import { getRepository, FindManyOptions, LessThanOrEqual, Like } from "typeorm";
+import { getRepository, FindManyOptions, LessThanOrEqual, Like, createQueryBuilder } from "typeorm";
 import { Image } from "../entity/Image";
 
 const router = express.Router()
@@ -30,11 +30,13 @@ router.post( "/", async (req, res, next) => {
     }
 })
 
-router.get( "/all/:target", async (req, res, next) => {
-    const target = req.params.target
+router.get( "/all/:targetId", async (req, res, next) => {
+    const targetId: string = req.params.targetId
     try {
-        const params: FindManyOptions = target ? {where: {target: {id: target}}} : {take: 10}
-        params.select = Image.shortKeys
+        const params: FindManyOptions = {
+            select: Image.shortKeys,
+            where: targetId
+        };
         const results = await imageRepository().find(params)
         res.send(results)
     } catch(err) {
@@ -42,11 +44,10 @@ router.get( "/all/:target", async (req, res, next) => {
     }
 })
 
-router.get( "/count/:target", async (req, res, next) => {
-    const targetId = req.params.target
+router.get( "/count/:targetId", async (req, res, next) => {
+    const targetId: string = req.params.targetId
     try {
-        const params: FindManyOptions = targetId ? {where: {target: {id: targetId}}} : null
-        const results = await imageRepository().count(params)
+        const results = await imageRepository().count()
         res.json({count: results})
     } catch(err) {
         next(err)
@@ -67,7 +68,8 @@ const sbibParams: string[] = [
     'imageName',
     'latitude',
     'longitude',
-    'sequence',
+    'sequenceTitle',
+    'missionPhase',
     'instrument',
     'resolution'
 ];
@@ -105,15 +107,14 @@ function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boole
 
 router.get( "/search", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
+    console.log(queryParams);
 
     let where: any = {
-        target: { id: 2 },
         minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
         instrument: queryParams.instrument ? queryParams.instrument : null,
         imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
-        sequenceTitle: queryParams.sequence ? queryParams.sequence : null,
-        // latitude: queryParams.latitude ? queryParams.latitude : null,
-        // longitude: queryParams.longitude ? queryParams.longitude : null,
+        sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
+        missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
     };
 
     Object.keys(where).map(key => {
@@ -141,7 +142,7 @@ router.get( "/search", async ( req, res, next ) => {
                     const footprintList: Array<string> = image.footprint.split(", ");
                     let polyX: Array<any> = [];
                     let polyY: Array<any> = [];
-                    footprintList.forEach( (item: string, index: number ) => {
+                    footprintList.forEach( (item: string ) => {
                         const coordinate = item.split(" ");
                         polyX.push(parseFloat(coordinate[0]));
                         polyY.push(parseFloat(coordinate[1]));
@@ -151,7 +152,6 @@ router.get( "/search", async ( req, res, next ) => {
                     if (ans) console.log('found one!!!');
                     return (ans) ? image : null;
                 }
-                return image
             }))
         } else {
             res.send(results)

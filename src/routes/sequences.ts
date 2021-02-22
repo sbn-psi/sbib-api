@@ -1,6 +1,7 @@
 import * as express from "express";
 import { getRepository, createQueryBuilder } from "typeorm";
 import { Seq } from "../entity/Seq";
+import { Image } from "../entity/Image";
 
 const router = express.Router()
 const sequenceRepository = () => getRepository(Seq)
@@ -22,34 +23,33 @@ router.post( "/", async (req, res, next) => {
 })
 
 router.get( "/all/:targetId", async (req, res, next) => {
-    const targetId = req.params.targetId
+    const targetId: string = req.params.targetId
     try {
-        const results = await createQueryBuilder( Seq )
-            .select( '*' )
-            .where( { targetId: targetId } )
-            .distinct( true )
+        const results = await createQueryBuilder(Image)
+            .select('sequence_title')
+            .where({targetId})
+            .distinct(true)
             .getRawMany();
-        res.json( results )
-    } catch( err ) {
-        next( err )
+        res.send(results)
+    } catch (error) {
+        next(error)
     }
 })
 
 router.get( "/count/:targetId", async (req, res, next) => {
-    const targetId = req.params.targetId
+    const targetId: string = req.params.targetId
     try {
-        const params = targetId ? {where: {targetId: targetId}} : null
-        const results = await sequenceRepository().count(params)
+        const results = await sequenceRepository().count({where:{targetId}})
         res.json(results)
     } catch(err) {
         next(err)
     }
 })
 
-router.get( "/single/:targetId", async (req, res, next) => {
-    const targetId = req.params.targetId
+router.get( "/single/:id", async (req, res, next) => {
+    const id = req.params.id
     try {
-        const results = await sequenceRepository().find( { where: { targetId: targetId } } )
+        const results = await sequenceRepository().find( { where: { id } } )
         res.json(results)
     } catch(err) {
         next(err)
