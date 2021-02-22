@@ -1,11 +1,10 @@
 import * as express from "express";
-import {getRepository} from "typeorm";
-import {Target} from "../entity/Target";
 import imageRoutes from "./images";
 import placeRoutes from "./places";
 import sequenceRoutes from "./sequences";
 import missionPhaseRoutes from "./missionPhases";
 import instrumentRoutes from "./instrument";
+import targetRoutes from "./target";
 
 export const register = ( app: express.Application ) => {
 
@@ -13,20 +12,10 @@ export const register = ( app: express.Application ) => {
         res.send( "Hello world!" )
     } )
 
-    app.use( "/images", imageRoutes)
-    app.use( "/places", placeRoutes)
-    app.use( "/sequences", sequenceRoutes)
-    app.use( "/missionPhases", missionPhaseRoutes)
-    app.use( "/instrument", instrumentRoutes)
-
-    app.get( "/targets", async (req, res, next) => {
-        const targetRepository = getRepository(Target)
-        try {
-            const results = await targetRepository.find()
-            res.send(results)
-        } catch(err) {
-            next(err)
-        }
-    })
-
+    app.use( "/images", imageRoutes )
+    app.use( "/places", placeRoutes )
+    app.use( "/sequences", sequenceRoutes )
+    app.use( "/missionPhases", missionPhaseRoutes )
+    app.use( "/instrument", instrumentRoutes )
+    app.use( "/targets", targetRoutes )
 };
