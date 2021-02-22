@@ -14,12 +14,9 @@ def main( file ):
     with open( outfile, "w" ) as o:
         print("files are open")
         for line in file.split("\n"):
-            newline = re.sub( r'\'\\\"N\/A\\\"\\r\'', 'NULL', line )
-            newline = re.sub( r'\'\\\"N\/A\\"\'', 'NULL', newline)
-            newline = re.sub( r'`id`, `image_name`', '`targetId`, `id`, `image_name`', newline)
-            newline = re.sub( r'\'\'', 'NULL', newline)
-            finalline = newline[:507] + target_id + ', ' + newline[507:] + "\n"
-            o.write( finalline )
+            line = re.sub( r'`id`, `image_name`', '`targetId`, `id`, `image_name`', line)
+            line = re.sub( r'^\(', '(1, ', line )
+            o.write( line + "\n" )
 
 # open file
 with open(filename) as f:
