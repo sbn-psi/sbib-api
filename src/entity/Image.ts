@@ -4,7 +4,7 @@ import {Target} from './Target'
 @Entity("images")
 export class Image {
 
-    static shortKeys: (keyof Image)[] = ['id', 'imageName', 'targetId', 'minLat', 'maxLat', 'minLon', 'maxLon', 'footprint']
+    static shortKeys: (keyof Image)[] = ['id', 'imageName', 'filename', 'targetId', 'minLat', 'maxLat', 'minLon', 'maxLon', 'footprint']
     private static requiredKeys: (keyof Image)[] = ['id', 'targetId', 'imageName', 'minLat', 'minLon', 'maxLat', 'maxLon', 'exposure', 'time']
 
     @PrimaryGeneratedColumn('increment')
