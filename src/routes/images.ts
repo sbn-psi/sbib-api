@@ -1,5 +1,5 @@
 import * as express from "express";
-import { getRepository, FindManyOptions, LessThanOrEqual, Like, createQueryBuilder } from "typeorm";
+import { getRepository, FindManyOptions, LessThanOrEqual, Like } from "typeorm";
 import { Image } from "../entity/Image";
 
 const router = express.Router()
@@ -47,7 +47,7 @@ router.get( "/all/:targetId", async (req, res, next) => {
 router.get( "/count/:targetId", async (req, res, next) => {
     const targetId: string = req.params.targetId
     try {
-        const results = await imageRepository().count()
+        const results = await imageRepository().count({where:{targetId}});
         res.json({count: results})
     } catch(err) {
         next(err)
@@ -71,7 +71,8 @@ const sbibParams: string[] = [
     'sequenceTitle',
     'missionPhase',
     'instrument',
-    'resolution'
+    'resolution',
+    'targetId',
 ];
 
 function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
@@ -110,6 +111,7 @@ router.get( "/search", async ( req, res, next ) => {
     console.log(queryParams);
 
     let where: any = {
+        targetId: queryParams.targetId ? queryParams.targetId : null,
         minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
         instrument: queryParams.instrument ? queryParams.instrument : null,
         imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,

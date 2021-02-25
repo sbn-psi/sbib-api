@@ -21,7 +21,5 @@ services:
         - .env
     ports:
       - "3306:3306"
-    volumes:
-      - 'sbib-data:/var/lib/mysql'
-volumes: 
-  sbib-data:
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE

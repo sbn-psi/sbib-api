@@ -29,4 +29,10 @@ export class Target {
 
     @Column({name: 'Comment'})
     comment: string;
+
+    @Column({name: 'model_path'})
+    modelPath: string;
+
+    @Column({name: 'image_path'})
+    imagePath: string;
 }
