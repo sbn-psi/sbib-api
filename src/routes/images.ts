@@ -139,13 +139,13 @@ router.get( "/search", async ( req, res, next ) => {
                     maxLon: image.maxLon,
                 };
                 if (!image.footprint) {
-                    return false;
+                    return null;
                 } else {
                     const footprintList: Array<string> = image.footprint.split(", ");
                     let polyX: Array<any> = [];
                     let polyY: Array<any> = [];
                     footprintList.forEach( (item: string ) => {
-                        const coordinate = item.split(" ");
+                        const coordinate = item.trim().split(" ");
                         polyX.push(parseFloat(coordinate[0]));
                         polyY.push(parseFloat(coordinate[1]));
                     })
@@ -170,7 +170,7 @@ function parseQueryString( query: any ): Object {
     
     // assure that only valid parameters are parsed
     sbibParams.map( ( param: string ) => {
-        const value = query[param]
+        const value = query[param];
         responseParams[param] = value;
     });
     
