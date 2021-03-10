@@ -75,36 +75,20 @@ const sbibParams: string[] = [
     'targetId',
 ];
 
-function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
-    var i = 0;
-    var j = 0;
+function pnpoly(xp: Array<any>, yp: Array<any>, x: number, y: number): boolean {
+    var i, j = 0;
     var c = false;
-    for (i = 0, j = xp.length - 1; i < xp.length; j = i++) {
-        const polyLat = xp[i];
-        const polyLon = yp[i];
-
-        if (
-            (
-                (
-                    (polyLon <= lon)
-                    &&
-                    (lon < yp[j])
-                )
-                ||
-                (
-                    (yp[j] <= lon)
-                    &&
-                    (lon < polyLon)
-                )
-            )
-            &&
-            (lat < (xp[j] - polyLat) * (lon - polyLon) / (yp[j] - polyLon) + polyLat)
-        ) {
-            c = !c;
-        }
+    
+    for (i = 0, j = xp.length-1; i < xp.length; j = i++) {
+  
+      if (( ((yp[i]<=y) && (y<yp[j])) ||
+           ((yp[j]<=y) && (y<yp[i])) ) &&
+          (x < (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i]))
+        c = !c;
     }
+
     return c;
-}
+};
 
 router.get( "/search", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
@@ -149,6 +133,9 @@ router.get( "/search", async ( req, res, next ) => {
                         polyX.push(parseFloat(coordinate[0]));
                         polyY.push(parseFloat(coordinate[1]));
                     })
+
+                    console.log('polyX',polyX);
+                    console.log('polyY',polyY);
 
                     let ans = pnpoly(polyX,polyY,lon,lat);
                     if (ans) console.log('found one!!!');
