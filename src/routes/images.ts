@@ -75,15 +75,19 @@ const sbibParams: string[] = [
     'targetId',
 ];
 
-function pnpoly(xp: Array<any>, yp: Array<any>, x: number, y: number): boolean {
-    var i, j = 0;
+function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
     var c = false;
     
-    for (i = 0, j = xp.length-1; i < xp.length; j = i++) {
+    for (let i = 0, j = xp.length - 1; i < xp.length; j = i++) {
+        const polyLat = xp[i];
+        const polyLon = yp[i];
+
+        const previousPolyLat = xp[j];
+        const previousPolyLon = yp[j];
   
-      if (( ((yp[i]<=y) && (y<yp[j])) ||
-           ((yp[j]<=y) && (y<yp[i])) ) &&
-          (x < (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i]))
+      if (( ((polyLon<=lat) && (lat<previousPolyLon)) ||
+           ((previousPolyLon<=lat) && (lat<polyLon)) ) &&
+          (lon < (previousPolyLat - polyLat) * (lat - polyLon) / (previousPolyLon - polyLon) + polyLat))
         c = !c;
     }
 
