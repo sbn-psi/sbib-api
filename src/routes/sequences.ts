@@ -2,6 +2,7 @@ import * as express from "express";
 import { getRepository, createQueryBuilder } from "typeorm";
 import { Seq } from "../entity/Seq";
 import { Image } from "../entity/Image";
+import { parseQueryString } from './index';
 
 const router = express.Router()
 const sequenceRepository = () => getRepository(Seq)
@@ -19,6 +20,22 @@ router.post( "/", async (req, res, next) => {
         }
     } catch(err) {
         next(err)
+    }
+})
+
+router.get( "/search", async ( req, res, next ) => {
+    const queryParams: any = parseQueryString( req.query );
+    const params = (!!queryParams.missionPhase) ? { targetId: queryParams.targetId, missionPhase: queryParams.missionPhase } : { targetId: queryParams.targetId };
+
+    try {
+        const results = await createQueryBuilder(Image)
+            .select('sequence_title')
+            .where(params)
+            .distinct(true)
+            .getRawMany();
+        res.send(results);
+    } catch (error) {
+        next(error);
     }
 })
 

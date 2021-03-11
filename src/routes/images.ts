@@ -1,6 +1,7 @@
 import * as express from "express";
 import { getRepository, FindManyOptions, LessThanOrEqual, Like } from "typeorm";
 import { Image } from "../entity/Image";
+import { parseQueryString } from './index';
 
 const router = express.Router()
 const imageRepository = () => getRepository(Image)
@@ -63,17 +64,6 @@ router.get( "/single/:id", async (req, res, next) => {
         next(err)
     }
 })
-
-const sbibParams: string[] = [
-    'imageName',
-    'latitude',
-    'longitude',
-    'sequenceTitle',
-    'missionPhase',
-    'instrument',
-    'resolution',
-    'targetId',
-];
 
 function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
     var c = false;
@@ -153,19 +143,5 @@ router.get( "/search", async ( req, res, next ) => {
         next(err)
     }
 })
-
-function parseQueryString( query: any ): Object {
-    let responseParams: {
-        [index: string]: any
-    } = {};
-    
-    // assure that only valid parameters are parsed
-    sbibParams.map( ( param: string ) => {
-        const value = query[param];
-        responseParams[param] = value;
-    });
-    
-    return responseParams;
-}
 
 export default router

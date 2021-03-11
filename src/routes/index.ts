@@ -19,3 +19,28 @@ export const register = ( app: express.Application ) => {
     app.use( "/instrument", instrumentRoutes )
     app.use( "/targets", targetRoutes )
 };
+
+const sbibParams: string[] = [
+    'imageName',
+    'latitude',
+    'longitude',
+    'sequenceTitle',
+    'missionPhase',
+    'instrument',
+    'resolution',
+    'targetId',
+];
+
+export function parseQueryString( query: any ): Object {
+    let responseParams: {
+        [index: string]: any
+    } = {};
+    
+    // assure that only valid parameters are parsed
+    sbibParams.map( ( param: string ) => {
+        const value = query[param];
+        responseParams[param] = value;
+    });
+    
+    return responseParams;
+}
