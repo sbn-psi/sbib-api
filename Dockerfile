@@ -6,7 +6,10 @@ WORKDIR /usr/src/app
 # Copy code and install dependencies
 COPY package*.json ./
 COPY tsconfig.json ./
+
 COPY ./src ./src
+COPY ./db ./db
+
 RUN npm install --only=production
 
 # Compile code
