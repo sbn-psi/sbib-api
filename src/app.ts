@@ -1,15 +1,20 @@
 import express from "express"
 import dotenv from "dotenv";
+import { CorsOptions} from "cors";
 import * as routes from "./routes";
 import { createConnection } from 'typeorm';
 import { backOff } from "exponential-backoff";
 
-if(process.env.NODE_ENV !== 'production') {
+var cors = require('cors');
+
+if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
 }
 
 const app = express();
 const port = 9494;
+
+app.use(cors());
 
 // Configure routes
 routes.register( app );
