@@ -1,6 +1,5 @@
 import express from "express"
 import dotenv from "dotenv";
-import { CorsOptions} from "cors";
 import * as routes from "./routes";
 import { createConnection } from 'typeorm';
 import { backOff } from "exponential-backoff";
@@ -40,5 +39,3 @@ connectToDatabase().then(() => {
     console.log(error)
     process.exit(1)
 })
-
-
