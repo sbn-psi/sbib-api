@@ -1,9 +1,11 @@
 version: "3"
 services:
-  app:
-    container_name: sbib-app
+  api:
+    container_name: sbib-api
     restart: always
     build: .
+    networks:
+      - sbib_default
     ports:
       - "9494:9494"
     depends_on:
@@ -14,15 +16,19 @@ services:
       - .env
   db:
     image: mysql
-    container_name: sbib-mysql
+    container_name: sbib-db
     command: --default-authentication-plugin=mysql_native_password
     restart: always
+    networks:
+      - sbib_default
     env_file:
-        - .env
+      - .env
     ports:
       - "3306:3306"
-    volumes:
-      - 'sbib-data:/var/lib/mysql'
 
 volumes: 
-  sbib-data: 
+  sbib-data:
+
+networks:
+  sbib_default:
+    external: true
