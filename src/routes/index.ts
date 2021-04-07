@@ -31,16 +31,16 @@ const sbibParams: string[] = [
     'targetId',
 ];
 
-export function parseQueryString( query: any ): Object {
-    let responseParams: {
+export function parseQueryString( query: any ): object {
+    const responseParams: {
         [index: string]: any
     } = {};
-    
+
     // assure that only valid parameters are parsed
     sbibParams.map( ( param: string ) => {
         const value = query[param];
         responseParams[param] = value;
     });
-    
+
     return responseParams;
 }
