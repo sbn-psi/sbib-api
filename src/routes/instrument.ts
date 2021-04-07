@@ -11,7 +11,7 @@ router.get( "/all/:targetId", async (req, res, next) => {
     try {
         const results = await createQueryBuilder( Image )
             .select( 'instrument' )
-            .where( { targetId: targetId } )
+            .where( { targetId } )
             .distinct(true)
             .getRawMany();
 
