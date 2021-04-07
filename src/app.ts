@@ -3,8 +3,7 @@ import dotenv from "dotenv";
 import * as routes from "./routes";
 import { createConnection } from 'typeorm';
 import { backOff } from "exponential-backoff";
-
-var cors = require('cors');
+import cors = require('cors');
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
