@@ -29,6 +29,9 @@ const sbibParams: string[] = [
     'instrument',
     'resolution',
     'targetId',
+    // SQL parameters
+    'page_size',
+    'start',
 ];
 
 export function parseQueryString( query: any ): object {

@@ -88,59 +88,68 @@ router.get( "/search", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
     console.log(queryParams);
 
-    let where: any = {
-        targetId: queryParams.targetId ? queryParams.targetId : null,
-        minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
-        instrument: queryParams.instrument ? queryParams.instrument : null,
-        imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
-        sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
-        missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
-    };
-
-    Object.keys(where).map(key => {
-        if (where[key] === null) delete where[key];
-    });
-
-    let params: any = { where };
-
-    try {
-        const results = await (await imageRepository().find(params))
-        if ( queryParams.latitude || queryParams.longitude ) {
-            const lat = queryParams.latitude;
-            const lon = queryParams.longitude;
-
-            res.send(results.filter(function latLonFilter( image: Image, index: number, array: Image[] ) {
-                const imageCoords = {
-                    minLat: image.minLat,
-                    maxLat: image.maxLat,
-                    minLon: image.minLon,
-                    maxLon: image.maxLon,
-                };
-                if (!image.footprint) {
-                    return null;
-                } else {
-                    const footprintList: Array<string> = image.footprint.split(", ");
-                    let polyX: Array<any> = [];
-                    let polyY: Array<any> = [];
-                    footprintList.forEach( (item: string ) => {
-                        const coordinate = item.trim().split(" ");
-                        polyX.push(parseFloat(coordinate[0]));
-                        polyY.push(parseFloat(coordinate[1]));
-                    })
-
-                    console.log('polyX',polyX);
-                    console.log('polyY',polyY);
-
-                    let ans = pnpoly(polyX,polyY,lon,lat);
-                    if (ans) console.log('found one!!!');
-                    return (ans) ? image : null;
-                }
-            }))
-        } else {
-            res.send(results)
+    if (!queryParams['page_size'] || !queryParams['start']) {
+        let missing = []
+        if (!queryParams['page_size']) missing.push('page_size')
+        if (!queryParams['start']) missing.push('start')
+        res.status(400).send(`Parameter(s) missing from request: ${missing.join(', ')}`)
+    } else {
+        let where: any = {
+            targetId: queryParams.targetId ? queryParams.targetId : null,
+            minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
+            instrument: queryParams.instrument ? queryParams.instrument : null,
+            imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
+            sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
+            missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
+        };
+    
+        Object.keys(where).map(key => {
+            if (where[key] === null) delete where[key];
+        });
+    
+        let params: any = {
+            where: where,
+            take: queryParams.page_size,
+            skip: queryParams.start,
+            order: {
+                id: 'ASC'
+            },
+        };
+    
+        try {
+            const results = await (await imageRepository().find(params))
+            if ( queryParams.latitude && queryParams.longitude ) {
+                const lat = queryParams.latitude;
+                const lon = queryParams.longitude;
+    
+                res.send(results.filter(function latLonFilter( image: Image, index: number, array: Image[] ) {
+                    if (!image.footprint) {
+                        return null;
+                    } else {
+                        const footprintList: Array<string> = image.footprint.split(", ");
+                        let polyX: Array<any> = [];
+                        let polyY: Array<any> = [];
+                        footprintList.forEach( (item: string ) => {
+                            const coordinate = item.trim().split(" ");
+                            polyX.push(parseFloat(coordinate[0]));
+                            polyY.push(parseFloat(coordinate[1]));
+                        })
+    
+                        console.log('polyX',polyX);
+                        console.log('polyY',polyY);
+    
+                        let ans = pnpoly(polyX,polyY,lon,lat);
+                        if (ans) console.log('found one!!!');
+                        return (ans) ? image : null;
+                    }
+                }))
+            } else {
+                console.log('no lat/lon search.')
+                res.send(results)
+            }
+        } catch(err) {
+            next(err)
         }
-    } catch(err) {
-        next(err)
     }
 })
 
