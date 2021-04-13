@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-docker exec -i sbib-mysql mysql sbib -uroot -pwxMahrbUGPHjkzMj4NNeQQPX < $1
+docker exec -i sbib-db mysql sbib -uroot -p < $1
 
 echo "Done."
 
