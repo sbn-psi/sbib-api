@@ -7,15 +7,13 @@ import re
 filename = str(sys.argv[1])
 outfile = re.sub(r'.sql', '.sql.out', filename)
 print(outfile)
-target_id = "1"
-
 
 def main( file ):
     with open( outfile, "w" ) as o:
         print("files are open")
         for line in file.split("\n"):
             line = re.sub( r'`id`, `image_name`', '`targetId`, `id`, `image_name`', line)
-            line = re.sub( r'^\(', '(1, ', line )
+            line = re.sub( r'^\(', '(3, ', line )
             o.write( line + "\n" )
 
 # open file
