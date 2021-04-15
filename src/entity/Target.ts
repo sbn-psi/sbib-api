@@ -33,6 +33,9 @@ export class Target {
     @Column({name: 'model_path'})
     modelPath: string;
 
-    @Column({name: 'image_path'})
+    @Column({name: 'material_path'})
+    materialPath: string;
+
+    @Column({name: 'image_basepath'})
     imagePath: string;
 }
