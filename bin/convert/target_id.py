@@ -6,17 +6,21 @@ import re
 
 filename = str(sys.argv[1])
 outfile = re.sub(r'.sql', '.sql.out', filename)
-print(outfile)
 
 def main( file ):
     with open( outfile, "w" ) as o:
-        print("files are open")
         for line in file.split("\n"):
-            line = re.sub( r'`id`, `image_name`', '`targetId`, `id`, `image_name`', line)
+            # ADD target_id column
+            line = re.sub( r'\(`image_name`', '(`target_id`, `image_name`', line)
+            # SET target_id
             line = re.sub( r'^\(', '(3, ', line )
+            # REPLACE single quotes with double quotes and ADD new line
+            line = re.sub( r'\'' ,'"', line )
+            # WRITE line to output file
             o.write( line + "\n" )
 
-# open file
+# open original file
 with open(filename) as f:
+    print("Running...")
     main( file=f.read() )
     print("Done.")
