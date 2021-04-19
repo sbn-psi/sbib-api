@@ -13,9 +13,6 @@ export class Image {
     @Column({name: 'image_name'})
     imageName: string
 
-    @ManyToOne(type => Target)
-    target: Target
-
     @Column({name: 'is_done'})
     isDone: boolean
 
@@ -34,7 +31,7 @@ export class Image {
     @Column({name: 'target_name'})
     targetName: string
 
-    @Column({name: 'targetId'})
+    @Column({name: 'target_id'})
     targetId: number
 
     @Column({name: 'target_desc'})
