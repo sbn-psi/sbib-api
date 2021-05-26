@@ -13,7 +13,7 @@ def main( file ):
             # ADD target_id column
             line = re.sub( r'\(`image_name`', '(`target_id`, `image_name`', line)
             # SET target_id
-            line = re.sub( r'^\(', '(3, ', line )
+            line = re.sub( r'^\(', '(1, ', line )
             # REPLACE single quotes with double quotes and ADD new line
             line = re.sub( r'\'' ,'"', line )
             # WRITE line to output file
