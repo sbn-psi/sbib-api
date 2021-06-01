@@ -8,7 +8,7 @@ import targetRoutes from "./target";
 
 export const register = ( app: express.Application ) => {
 
-    app.get( "/", ( req, res ) => {
+    app.get( "/api", ( req, res ) => {
         res.send( "Hello API world!" )
     } )
 
