@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 # Copy code and install dependencies
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY .htaccess ./
 
 COPY ./app ./app
 COPY ./src ./src
