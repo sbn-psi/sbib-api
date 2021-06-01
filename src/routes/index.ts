@@ -9,15 +9,15 @@ import targetRoutes from "./target";
 export const register = ( app: express.Application ) => {
 
     app.get( "/", ( req, res ) => {
-        res.send( "Hello world!" )
+        res.send( "Hello API world!" )
     } )
 
-    app.use( "/images", imageRoutes )
-    app.use( "/places", placeRoutes )
-    app.use( "/sequences", sequenceRoutes )
-    app.use( "/missionPhases", missionPhaseRoutes )
-    app.use( "/instrument", instrumentRoutes )
-    app.use( "/targets", targetRoutes )
+    app.use( "/api/images", imageRoutes )
+    app.use( "/api/places", placeRoutes )
+    app.use( "/api/sequences", sequenceRoutes )
+    app.use( "/api/missionPhases", missionPhaseRoutes )
+    app.use( "/api/instrument", instrumentRoutes )
+    app.use( "/api/targets", targetRoutes )
 };
 
 const sbibParams: string[] = [
