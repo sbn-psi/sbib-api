@@ -13,7 +13,6 @@ const app = express();
 const port = 9494;
 
 app.use(cors());
-app.use(express.static('app'))
 
 // Configure routes
 routes.register( app );

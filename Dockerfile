@@ -1,14 +1,26 @@
 FROM node:12
 
-# Create app directory to hold the application code inside the image
-WORKDIR /usr/src/app
+# COPY frontend to apache directory
+COPY ./app /var/www/html
+COPY .htaccess ./
+
+# Create app directory to serve backend/API
+WORKDIR /usr/local/sbib
 
 # Copy code and install dependencies
 COPY package*.json ./
 COPY tsconfig.json ./
-COPY .htaccess ./
 
-COPY ./app ./app
+# Install apache service
+RUN apt-get update && \
+    apt-get install -y apache2;
+
+# Apache configs
+COPY apache2.conf /etc/apache2/
+
+# Enable rewrite_mod and restart apache to apply custom settings
+RUN a2enmod rewrite;
+
 COPY ./src ./src
 COPY ./db ./db
 
@@ -18,7 +30,7 @@ RUN npm install --only=production
 RUN npm run build
 
 # Expose port to outside world
-EXPOSE 8989
+EXPOSE 9495
 
 # Run the app
 CMD npm run start
