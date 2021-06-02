@@ -7,7 +7,7 @@ node_modules/
 # do not ignore .env.sample
 .env
 .env.development
-.env.vger
-.env.borg 
+.env.staging
+.env.production
 
 app/
