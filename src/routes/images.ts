@@ -87,91 +87,84 @@ function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boole
 interface SearchResponse {
     data: Image[],
     records: number,
-    page_size: number,
-    start: number,
+    page_size?: number,
+    start?: number,
 }
 
 router.get( "/search", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
 
-    if (!queryParams['page_size'] || !queryParams['start']) {
-        let missing = []
-        if (!queryParams['page_size']) missing.push('page_size')
-        if (!queryParams['start']) missing.push('start')
-        res.status(400).send(`Parameter(s) missing from request: ${missing.join(', ')}`)
-    } else {
-        const take = queryParams.page_size
-        const skip = queryParams.start
+    const skip = queryParams.start
 
-        let where: any = {
-            targetId: queryParams.targetId ? queryParams.targetId : null,
-            minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
-            instrument: queryParams.instrument ? queryParams.instrument : null,
-            imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
-            sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
-            missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
+    let where: any = {
+        targetId: queryParams.targetId ? queryParams.targetId : null,
+        minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
+        instrument: queryParams.instrument ? queryParams.instrument : null,
+        imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
+        sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
+        missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
+    }
+
+    Object.keys(where).map(key => {
+        if (where[key] === null) delete where[key];
+    })
+
+    let params: any = {
+        where: where,
+    }
+
+    if (!!queryParams['page_size'] && !!queryParams['start']) {
+        params['take'] = queryParams['page_size']
+        params['skip'] = queryParams['start']
+        params['order'] = { id: 'ASC' }
+    }
+
+    console.log(params);
+
+    try {
+        let response: SearchResponse = {
+            data: null,
+            records: null,
         }
-    
-        Object.keys(where).map(key => {
-            if (where[key] === null) delete where[key];
-        })
-    
-        let params: any = {
-            where: where,
-            take: take,
-            skip: skip,
-            order: {
-                id: 'ASC'
-            },
+
+        const data = await imageRepository().find(params)
+        const records = await imageRepository().count({where:where})
+
+        if ( queryParams.latitude && queryParams.longitude ) {
+            const lat = queryParams.latitude
+            const lon = queryParams.longitude
+
+            response.data = data.filter(function latLonFilter( image: Image, index: number, array: Image[] ) {
+                if (!image.footprint) {
+                    return null
+                } else {
+                    const footprintList: Array<string> = image.footprint.split(", ")
+                    
+                    let polyX: Array<any> = []
+                    let polyY: Array<any> = []
+
+                    footprintList.forEach( (item: string ) => {
+                        const coordinate = item.trim().split(" ")
+                        polyX.push(parseFloat(coordinate[0]))
+                        polyY.push(parseFloat(coordinate[1]))
+                    })
+
+                    console.log('polyX',polyX)
+                    console.log('polyY',polyY)
+
+                    let ans = pnpoly(polyX,polyY,lon,lat)
+                    if (ans) console.log('found one!!!')
+                    return (ans) ? image : null
+                }
+            })
+        } else {
+            console.log('no lat/lon search.')
+            response.data = data
         }
-    
-        try {
-            let response: SearchResponse = {
-                data: null,
-                records: null,
-                page_size: take,
-                start: skip,
-            }
-
-            const data = await imageRepository().find(params)
-            const records = await imageRepository().count({where:where})
-
-            if ( queryParams.latitude && queryParams.longitude ) {
-                const lat = queryParams.latitude
-                const lon = queryParams.longitude
-
-                response.data = data.filter(function latLonFilter( image: Image, index: number, array: Image[] ) {
-                    if (!image.footprint) {
-                        return null
-                    } else {
-                        const footprintList: Array<string> = image.footprint.split(", ")
-                        
-                        let polyX: Array<any> = []
-                        let polyY: Array<any> = []
-
-                        footprintList.forEach( (item: string ) => {
-                            const coordinate = item.trim().split(" ")
-                            polyX.push(parseFloat(coordinate[0]))
-                            polyY.push(parseFloat(coordinate[1]))
-                        })
-    
-                        console.log('polyX',polyX)
-                        console.log('polyY',polyY)
-    
-                        let ans = pnpoly(polyX,polyY,lon,lat)
-                        if (ans) console.log('found one!!!')
-                        return (ans) ? image : null
-                    }
-                })
-            } else {
-                console.log('no lat/lon search.')
-                response.data = data
-            }
-            response.records = records
-            res.send(response)
-        } catch(err) {
-            next(err)
-        }
+        response.records = records
+        res.send(response)
+    } catch(err) {
+        next(err)
     }
 })
 
