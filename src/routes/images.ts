@@ -65,24 +65,57 @@ router.get( "/single/:id", async (req, res, next) => {
     }
 })
 
-function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
-    var c = false;
+// i tried to refactor this function
+// i tried
+// i tried
+// i could not get tests to pass
+// i cried
+// i cried
+// why o why must this function be so in my head
+// couldnt that ice cream truck have hit me instead
+
+// function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
+//     var c = false;
     
-    for (let i = 0, j = xp.length - 1; i < xp.length; j = i++) {
-        const polyLat = xp[i];
-        const polyLon = yp[i];
+//     for (let i = 0, j = xp.length - 1; i < xp.length; j = i++) {
+//         const polyLat = xp[i];
+//         const polyLon = yp[i];
 
-        const previousPolyLat = xp[j];
-        const previousPolyLon = yp[j];
+//         const previousPolyLat = xp[j];
+//         const previousPolyLon = yp[j];
   
-      if (( ((polyLon<=lat) && (lat<previousPolyLon)) ||
-           ((previousPolyLon<=lat) && (lat<polyLon)) ) &&
-          (lon < (previousPolyLat - polyLat) * (lat - polyLon) / (previousPolyLon - polyLon) + polyLat))
-        c = !c;
-    }
+//       if (( ((polyLon<=lat) && (lat<previousPolyLon)) ||
+//            ((previousPolyLon<=lat) && (lat<polyLon)) ) &&
+//           (lon < (previousPolyLat - polyLat) * (lat - polyLon) / (previousPolyLon - polyLon) + polyLat))
+//         c = !c;
+//     }
 
+//     return c;
+// };
+
+function pnpoly( npol: number, xp: Array<any>, yp: Array<any>, x: number, y: number): boolean {
+    var i = 0;
+    var j = 0;
+    var c = false;
+    for (i = 0, j = npol-1; i < npol; j = i++) {
+      if (
+      (
+        (
+          (yp[i]<=y) && (y<yp[j])
+        )
+        ||
+        (
+          (yp[j]<=y) && (y<yp[i])
+        )
+      )
+      &&
+          (x < (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i])
+    ) {
+      c = !c;
+    }
+    }//for
     return c;
-};
+  }
 
 interface SearchResponse {
     data: Image[],
@@ -119,8 +152,6 @@ router.get( "/search", async ( req, res, next ) => {
         params['order'] = { id: 'ASC' }
     }
 
-    console.log(params);
-
     try {
         let response: SearchResponse = {
             data: null,
@@ -149,19 +180,17 @@ router.get( "/search", async ( req, res, next ) => {
                         polyY.push(parseFloat(coordinate[1]))
                     })
 
-                    console.log('polyX',polyX)
-                    console.log('polyY',polyY)
-
-                    let ans = pnpoly(polyX,polyY,lon,lat)
-                    if (ans) console.log('found one!!!')
+                    let ans = pnpoly(polyX.length,polyX,polyY,lon,lat)
                     return (ans) ? image : null
                 }
             })
+            console.log(response.data.length);
+            
         } else {
             console.log('no lat/lon search.')
             response.data = data
         }
-        response.records = records
+        response.records = response.data.length
         res.send(response)
     } catch(err) {
         next(err)
