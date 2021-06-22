@@ -76,14 +76,14 @@ router.get( "/single/:id", async (req, res, next) => {
 
 // function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
 //     var c = false;
-    
+
 //     for (let i = 0, j = xp.length - 1; i < xp.length; j = i++) {
 //         const polyLat = xp[i];
 //         const polyLon = yp[i];
 
 //         const previousPolyLat = xp[j];
 //         const previousPolyLon = yp[j];
-  
+
 //       if (( ((polyLon<=lat) && (lat<previousPolyLon)) ||
 //            ((previousPolyLon<=lat) && (lat<polyLon)) ) &&
 //           (lon < (previousPolyLat - polyLat) * (lat - polyLon) / (previousPolyLon - polyLon) + polyLat))
@@ -93,10 +93,10 @@ router.get( "/single/:id", async (req, res, next) => {
 //     return c;
 // };
 
-function pnpoly( npol: number, xp: Array<any>, yp: Array<any>, x: number, y: number): boolean {
-    var i = 0;
-    var j = 0;
-    var c = false;
+function pnpoly( npol: number, xp: any[], yp: any[], x: number, y: number): boolean {
+    let i = 0;
+    let j = 0;
+    let c = false;
     for (i = 0, j = npol-1; i < npol; j = i++) {
       if (
       (
@@ -113,7 +113,7 @@ function pnpoly( npol: number, xp: Array<any>, yp: Array<any>, x: number, y: num
     ) {
       c = !c;
     }
-    }//for
+    }// for
     return c;
   }
 
@@ -129,7 +129,7 @@ router.get( "/search", async ( req, res, next ) => {
 
     const skip = queryParams.start
 
-    let where: any = {
+    const where: any = {
         targetId: queryParams.targetId ? queryParams.targetId : null,
         minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
         instrument: queryParams.instrument ? queryParams.instrument : null,
@@ -142,24 +142,24 @@ router.get( "/search", async ( req, res, next ) => {
         if (where[key] === null) delete where[key];
     })
 
-    let params: any = {
-        where: where,
+    const params: any = {
+        where,
     }
 
-    if (!!queryParams['page_size'] && !!queryParams['start']) {
-        params['take'] = queryParams['page_size']
-        params['skip'] = queryParams['start']
-        params['order'] = { id: 'ASC' }
+    if (!!queryParams.page_size && !!queryParams.start) {
+        params.take = queryParams.page_size
+        params.skip = queryParams.start
+        params.order = { id: 'ASC' }
     }
 
     try {
-        let response: SearchResponse = {
+        const response: SearchResponse = {
             data: null,
             records: null,
         }
 
         const data = await imageRepository().find(params)
-        const records = await imageRepository().count({where:where})
+        const records = await imageRepository().count({where})
 
         if ( queryParams.latitude && queryParams.longitude ) {
             const lat = queryParams.latitude
@@ -169,10 +169,10 @@ router.get( "/search", async ( req, res, next ) => {
                 if (!image.footprint) {
                     return null
                 } else {
-                    const footprintList: Array<string> = image.footprint.split(", ")
-                    
-                    let polyX: Array<any> = []
-                    let polyY: Array<any> = []
+                    const footprintList: string[] = image.footprint.split(", ")
+
+                    const polyX: any[] = []
+                    const polyY: any[] = []
 
                     footprintList.forEach( (item: string ) => {
                         const coordinate = item.trim().split(" ")
@@ -180,12 +180,12 @@ router.get( "/search", async ( req, res, next ) => {
                         polyY.push(parseFloat(coordinate[1]))
                     })
 
-                    let ans = pnpoly(polyX.length,polyX,polyY,lon,lat)
+                    const ans = pnpoly(polyX.length,polyX,polyY,lon,lat)
                     return (ans) ? image : null
                 }
             })
             console.log(response.data.length);
-            
+
         } else {
             console.log('no lat/lon search.')
             response.data = data

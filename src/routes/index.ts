@@ -5,9 +5,18 @@ import sequenceRoutes from "./sequences";
 import missionPhaseRoutes from "./missionPhases";
 import instrumentRoutes from "./instrument";
 import targetRoutes from "./target";
+import path from "path";
 
 export const register = ( app: express.Application ) => {
 
+    /* CLIENT APP */
+    app.use( "/", express.static( path.resolve( __dirname, "../client" ) ) )
+
+    app.get( "/ceres", function (req, res) { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
+    app.get( "/eros", function (req, res) { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
+    app.get( "/67p", function (req, res) { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
+
+    /* API ENDPOINTS */
     app.get( "/api", ( req, res ) => {
         res.send( "Hello API world!" )
     } )
@@ -18,6 +27,11 @@ export const register = ( app: express.Application ) => {
     app.use( "/api/missionPhases", missionPhaseRoutes )
     app.use( "/api/instrument", instrumentRoutes )
     app.use( "/api/targets", targetRoutes )
+
+    /* CATCH-ALL REDIRECT */
+    app.use( "*", (req, res) => {
+        res.sendFile( path.resolve( __dirname, "../client/index.html" ) )
+    } )
 };
 
 const sbibParams: string[] = [

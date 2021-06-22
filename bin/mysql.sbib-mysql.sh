@@ -1,1 +1,0 @@
-docker exec -it sbib-mysql mysql sbib -u sbib -p
