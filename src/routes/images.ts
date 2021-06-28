@@ -126,20 +126,34 @@ interface SearchResponse {
 
 router.get( "/search", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
+    let where: Array<object> = [];
 
-    const skip = queryParams.start
-
-    const where: any = {
-        targetId: queryParams.targetId ? queryParams.targetId : null,
-        minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
-        instrument: queryParams.instrument ? queryParams.instrument : null,
-        imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
-        sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
-        missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
+    if (queryParams.missionPhase) {
+        queryParams.missionPhase.split(",").map(( phase: String ) => {
+            where.push({
+                targetId: queryParams.targetId ? queryParams.targetId : null,
+                missionPhase: phase,
+                minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
+                instrument: queryParams.instrument ? queryParams.instrument : null,
+                imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
+                sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
+            })
+        })
+    } else {
+        where.push({
+            targetId: queryParams.targetId ? queryParams.targetId : null,
+                missionPhase: null,
+                minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
+                instrument: queryParams.instrument ? queryParams.instrument : null,
+                imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
+                sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
+        })
     }
 
-    Object.keys(where).map(key => {
-        if (where[key] === null) delete where[key];
+    where.map((params: any) => {
+        Object.keys(params).map((key: any) => {
+            if (params[key] === null) delete params[key];
+        })
     })
 
     const params: any = {
@@ -159,7 +173,6 @@ router.get( "/search", async ( req, res, next ) => {
         }
 
         const data = await imageRepository().find(params)
-        const records = await imageRepository().count({where})
 
         if ( queryParams.latitude && queryParams.longitude ) {
             const lat = queryParams.latitude
@@ -184,8 +197,6 @@ router.get( "/search", async ( req, res, next ) => {
                     return (ans) ? image : null
                 }
             })
-            console.log(response.data.length);
-
         } else {
             console.log('no lat/lon search.')
             response.data = data

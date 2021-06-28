@@ -1,5 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from "typeorm";
-import {Target} from './Target'
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity("images")
 export class Image {
