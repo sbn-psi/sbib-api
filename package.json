@@ -1,6 +1,6 @@
 {
   "name": "sbib",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Node application version of SBIB backend",
   "repository": "https://github.com/sbn-psi/sbib",
   "main": "dist/app.js",
