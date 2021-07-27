@@ -12,9 +12,9 @@ export const register = ( app: express.Application ) => {
     /* CLIENT APP */
     app.use( "/", express.static( path.resolve( __dirname, "../client" ) ) )
 
-    app.get( "/ceres", function (req, res) { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
-    app.get( "/eros", function (req, res) { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
-    app.get( "/67p", function (req, res) { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
+    app.get( "/ceres", (req, res) => { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
+    app.get( "/eros", (req, res) => { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
+    app.get( "/67p", (req, res) => { res.sendFile( path.resolve( __dirname, "../client/index.html" ) ) })
 
     /* API ENDPOINTS */
     app.get( "/api", ( req, res ) => {
@@ -38,7 +38,7 @@ const sbibParams: string[] = [
     'imageName',
     'latitude',
     'longitude',
-    'sequenceTitle',
+    'sequenceTitles',
     'missionPhase',
     'instrument',
     'resolution',

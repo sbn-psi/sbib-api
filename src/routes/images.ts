@@ -126,33 +126,33 @@ interface SearchResponse {
 
 router.get( "/search", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
-    let where: Array<object> = [];
+    const where: object[] = [];
 
-    if (queryParams.missionPhase) {
-        queryParams.missionPhase.split(",").map(( phase: String ) => {
+    if (queryParams.sequenceTitles) {
+        queryParams.sequenceTitles.split(",").map(( seq: string ) => {
             where.push({
                 targetId: queryParams.targetId ? queryParams.targetId : null,
-                missionPhase: phase,
+                sequenceTitle: seq,
+                missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
                 minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
                 instrument: queryParams.instrument ? queryParams.instrument : null,
                 imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
-                sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
             })
         })
     } else {
         where.push({
             targetId: queryParams.targetId ? queryParams.targetId : null,
-                missionPhase: null,
-                minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
-                instrument: queryParams.instrument ? queryParams.instrument : null,
-                imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
-                sequenceTitle: queryParams.sequenceTitle ? queryParams.sequenceTitle : null,
+            sequenceTitle: null,
+            missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
+            minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
+            instrument: queryParams.instrument ? queryParams.instrument : null,
+            imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
         })
     }
 
-    where.map((params: any) => {
-        Object.keys(params).map((key: any) => {
-            if (params[key] === null) delete params[key];
+    where.map((list: object[]) => {
+        Object.keys(list).map((key: any) => {
+            if (list[key] === null) delete list[key];
         })
     })
 
