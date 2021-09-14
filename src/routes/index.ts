@@ -5,6 +5,7 @@ import sequenceRoutes from "./sequences";
 import missionPhaseRoutes from "./missionPhases";
 import instrumentRoutes from "./instrument";
 import targetRoutes from "./target";
+import footprintRoutes from "./footprints";
 import path from "path";
 
 export const register = ( app: express.Application ) => {
@@ -27,6 +28,7 @@ export const register = ( app: express.Application ) => {
     app.use( "/api/missionPhases", missionPhaseRoutes )
     app.use( "/api/instrument", instrumentRoutes )
     app.use( "/api/targets", targetRoutes )
+    app.use( "/api/footprints", footprintRoutes )
 
     /* CATCH-ALL REDIRECT */
     app.use( "*", (req, res) => {
