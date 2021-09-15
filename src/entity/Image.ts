@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Footprint } from "./Footprint";
 
 @Entity("images")
 export class Image {
@@ -86,6 +87,9 @@ export class Image {
 
     @Column("text")
     footprint: string
+
+    @OneToMany(() => Footprint, footprint => footprint.footprints)
+    footprints: Footprint
 
     @Column()
     filter: string
