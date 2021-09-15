@@ -1,5 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from "typeorm";
-import { Image } from './Image';
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity("footprints")
 export class Footprint {
@@ -7,8 +6,8 @@ export class Footprint {
     @PrimaryGeneratedColumn('increment')
     id: number;
     
-    @ManyToOne(() => Image, image => image.footprints)
-    footprints: string;
+    @Column()
+    coordinates: string;
 
     @Column()
     imageName: string
