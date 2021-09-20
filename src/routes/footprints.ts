@@ -1,17 +1,17 @@
 import * as express from "express";
 import {getRepository, FindManyOptions} from "typeorm";
-import {Footprint} from "../entity/Footprint";
+import { Image } from "../entity/Image";
 
 const router = express.Router()
-const footprint = () => getRepository(Footprint)
+const images = () => getRepository(Image);
 
 router.use(express.json())
 
-router.get( "/:imageName", async (req, res, next) => {
-    const imageName = req.params.imageName
+router.get( "/:imageId", async (req, res, next) => {
+    const imageId = req.params.imageId
     try {
-        const params: FindManyOptions = {where: {imageName: imageName}}
-        const results = await footprint().find(params)
+        const params: FindManyOptions = {where: { id: imageId }, relations: ['footprints']}
+        const results = await images().find(params)
         console.log(results);
         res.send(results)
     } catch(err) {
