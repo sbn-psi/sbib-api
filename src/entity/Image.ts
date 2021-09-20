@@ -88,6 +88,9 @@ export class Image {
     @Column("text")
     footprint: string
 
+    @OneToMany(() => Footprint, footprint => footprint.image)
+    footprints: Footprint[]
+
     @Column()
     filter: string
 
