@@ -19,7 +19,7 @@ export class Seq {
     @Column({name: 'is_useme'})
     isUseMe: boolean = null
 
-    @Column({name: 'is_done'})
+    @Column({name: 'is_done', default: false})
     isDone: boolean = null
 
     static validate(obj: any) {
