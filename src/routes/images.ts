@@ -1,4 +1,5 @@
 import * as express from "express";
+import { Footprint } from "../entity/Footprint";
 import { getRepository, FindManyOptions, LessThanOrEqual, Like } from "typeorm";
 import { Image } from "../entity/Image";
 import { parseQueryString } from './index';
@@ -65,63 +66,50 @@ router.get( "/single/:id", async (req, res, next) => {
     }
 })
 
-// i tried to refactor this function
-// i tried
-// i tried
-// i could not get tests to pass
-// i cried
-// i cried
-// why o why must this function be so in my head
-// couldnt that ice cream truck have hit me instead
-
-// function pnpoly(xp: Array<any>, yp: Array<any>, lon: number, lat: number): boolean {
-//     var c = false;
-
-//     for (let i = 0, j = xp.length - 1; i < xp.length; j = i++) {
-//         const polyLat = xp[i];
-//         const polyLon = yp[i];
-
-//         const previousPolyLat = xp[j];
-//         const previousPolyLon = yp[j];
-
-//       if (( ((polyLon<=lat) && (lat<previousPolyLon)) ||
-//            ((previousPolyLon<=lat) && (lat<polyLon)) ) &&
-//           (lon < (previousPolyLat - polyLat) * (lat - polyLon) / (previousPolyLon - polyLon) + polyLat))
-//         c = !c;
-//     }
-
-//     return c;
-// };
-
-function pnpoly( npol: number, xp: any[], yp: any[], x: number, y: number): boolean {
+function pnpoly(npol: number, xp: any[], yp: any[], x: number, y: number): boolean {
     let i = 0;
     let j = 0;
     let c = false;
-    for (i = 0, j = npol-1; i < npol; j = i++) {
-      if (
-      (
-        (
-          (yp[i]<=y) && (y<yp[j])
-        )
-        ||
-        (
-          (yp[j]<=y) && (y<yp[i])
-        )
-      )
-      &&
-          (x < (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i])
-    ) {
-      c = !c;
+    for (i = 0, j = npol - 1; i < npol; j = i++) {
+        if (
+            (
+                (
+                    (yp[i] <= y) && (y < yp[j])
+                )
+                ||
+                (
+                    (yp[j] <= y) && (y < yp[i])
+                )
+            )
+            &&
+            (x < (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i])
+        ) {
+            c = !c;
+        }
     }
-    }// for
     return c;
-  }
+}
 
 interface SearchResponse {
     data: Image[],
     records: number,
     page_size?: number,
     start?: number,
+}
+
+function testPoly( footprint: Footprint, lon: number, lat: number ) {
+    const footprintList: string[] = footprint.coordinates.split(", ");
+
+    const polyX: any[] = [];
+    const polyY: any[] = [];
+
+    footprintList.forEach( ( item: string ) => {
+        const coordinate = item.trim().split(" ");
+        polyX.push(parseFloat(coordinate[0]));
+        polyY.push(parseFloat(coordinate[1]));
+    })
+
+    return pnpoly(polyX.length,polyX,polyY,lon,lat);
 }
 
 router.get( "/search", async ( req, res, next ) => {
@@ -158,6 +146,7 @@ router.get( "/search", async ( req, res, next ) => {
 
     const params: any = {
         where,
+        relations: ['footprints'],
     }
 
     if (!!queryParams.page_size && !!queryParams.start) {
@@ -179,22 +168,15 @@ router.get( "/search", async ( req, res, next ) => {
             const lon = queryParams.longitude
 
             response.data = data.filter(function latLonFilter( image: Image, index: number, array: Image[] ) {
-                if (!image.footprint) {
+                if (!image.footprints) {
                     return null
                 } else {
-                    const footprintList: string[] = image.footprint.split(", ")
-
-                    const polyX: any[] = []
-                    const polyY: any[] = []
-
-                    footprintList.forEach( (item: string ) => {
-                        const coordinate = item.trim().split(" ")
-                        polyX.push(parseFloat(coordinate[0]))
-                        polyY.push(parseFloat(coordinate[1]))
-                    })
-
-                    const ans = pnpoly(polyX.length,polyX,polyY,lon,lat)
-                    return (ans) ? image : null
+                    let ans;
+                    for (let i = 0; i < image.footprints.length; i++) {
+                        ans = testPoly(image.footprints[i],lon,lat);
+                        if (!!ans) return ans;
+                    }
+                    return ans;
                 }
             })
         } else {
