@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Index } from "typeorm";
 import { Image } from "./Image";
 
 @Entity("footprints")
 export class Footprint {
 
+    @Index()
     @PrimaryGeneratedColumn('increment')
     id: number;
 

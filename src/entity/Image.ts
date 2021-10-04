@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from "typeorm";
 import { Footprint } from "./Footprint";
 
 @Entity("images")
@@ -10,6 +10,7 @@ export class Image {
     @PrimaryGeneratedColumn('increment')
     id: number
 
+    @Index()
     @Column({name: 'image_name'})
     imageName: string
 
