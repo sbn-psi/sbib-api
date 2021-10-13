@@ -6,6 +6,7 @@ import missionPhaseRoutes from "./missionPhases";
 import instrumentRoutes from "./instrument";
 import targetRoutes from "./target";
 import footprintRoutes from "./footprints";
+import resolutionRoutes from "./resolution";
 import path from "path";
 
 export const register = ( app: express.Application ) => {
@@ -29,6 +30,7 @@ export const register = ( app: express.Application ) => {
     app.use( "/api/instrument", instrumentRoutes )
     app.use( "/api/targets", targetRoutes )
     app.use( "/api/footprints", footprintRoutes )
+    app.use( "/api/resolution", resolutionRoutes )
 
     /* CATCH-ALL REDIRECT */
     app.use( "*", (req, res) => {
