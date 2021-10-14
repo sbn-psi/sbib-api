@@ -59,16 +59,18 @@ router.get( "/", async ( req, res, next ) => {
     const queryParams: any = parseQueryString( req.query )
     const where: object[] = [];
 
-    if (queryParams.sequenceTitles) {
-        queryParams.sequenceTitles.split(",").map(( seq: string ) => {
-            where.push({
+    if (queryParams.phaseSequence) {
+        queryParams.phaseSequence.split(",").map(( ps: string ) => {
+            const [phase, sequence] = ps.split('-');
+            const obj = {
                 targetId: queryParams.targetId ? queryParams.targetId : null,
-                sequenceTitle: seq,
-                missionPhase: queryParams.missionPhase ? queryParams.missionPhase : null,
+                sequenceTitle: sequence,
+                missionPhase: phase,
                 minRes: queryParams.resolution ? LessThanOrEqual(queryParams.resolution) : null,
                 instrument: queryParams.instrument ? queryParams.instrument : null,
                 imageName: queryParams.imageName ? Like(`%${queryParams.imageName}%`) : null,
-            })
+            };
+            where.push(obj);
         })
     } else {
         where.push({
