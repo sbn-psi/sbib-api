@@ -7,6 +7,7 @@ import instrumentRoutes from "./instrument";
 import targetRoutes from "./target";
 import footprintRoutes from "./footprints";
 import resolutionRoutes from "./resolution";
+import searchRoutes from "./search";
 import path from "path";
 
 export const register = ( app: express.Application ) => {
@@ -24,6 +25,7 @@ export const register = ( app: express.Application ) => {
     } )
 
     app.use( "/api/images", imageRoutes )
+    app.use( "/api/search", searchRoutes )
     app.use( "/api/places", placeRoutes )
     app.use( "/api/sequences", sequenceRoutes )
     app.use( "/api/missionPhases", missionPhaseRoutes )
